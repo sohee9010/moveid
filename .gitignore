@@ -1,0 +1,36 @@
+# 개인 기획 문서 (공개 저장소에 올리지 않음)
+prd_md
+
+# 의존성
+node_modules/
+.pnpm-store/
+
+# 빌드 결과
+dist/
+dist_keycloak/
+build/
+storybook-static/
+coverage/
+*.tsbuildinfo
+
+# 환경 변수 (비밀값) — .env.example 만 커밋
+.env
+.env.*
+!.env.example
+
+# Google OAuth 클라이언트 JSON 등 비밀 파일
+client_secret*.json
+*.pem
+
+# 테스트 결과
+playwright-report/
+test-results/
+blob-report/
+
+# 로그·OS·에디터
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
