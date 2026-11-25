@@ -61,6 +61,12 @@ export default defineConfig(
     },
   },
 
+  // Node 로 실행하는 스크립트 (시드 등)
+  {
+    files: ['scripts/**/*.ts'],
+    languageOptions: { globals: globals.node },
+  },
+
   // 서식은 Prettier 가 담당하므로 충돌하는 규칙을 끈다 (항상 마지막).
   prettier,
 );

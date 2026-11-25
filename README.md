@@ -15,6 +15,7 @@ Keycloak 기반 OAuth 2.0 / OpenID Connect 위에 고객용 계정 관리(Front 
 cp .env.example .env      # 값 채우기 (Google 로그인은 비워 둬도 됨)
 pnpm install
 pnpm kc:up                # PostgreSQL + Keycloak + Mailpit 실행, 준비될 때까지 대기
+pnpm seed                 # 테스트 회원 44명 + 지난 30일 로그인 이벤트
 pnpm dev                  # 앱 4개 실행
 ```
 
@@ -32,5 +33,19 @@ pnpm dev                  # 앱 4개 실행
 | `pnpm kc:up` / `pnpm kc:down` | 인증 환경 실행 / 중지 (데이터 유지)                         |
 | `pnpm kc:reset`               | 데이터를 지우고 `keycloak/realm-export.json` 을 다시 import |
 | `pnpm kc:logs`                | Keycloak 로그 보기                                          |
+| `pnpm seed`                   | 테스트 데이터 넣기 (여러 번 실행해도 안전)                  |
+
+### 테스트 계정 (로컬 전용)
+
+| 계정                     | 비밀번호     | 용도                               |
+| ------------------------ | ------------ | ---------------------------------- |
+| `admin@moveid.local`     | `Admin123!`  | 관리자 (`moveid-admin`)            |
+| `viewer@moveid.local`    | `Viewer123!` | 조회 전용 관리자 (`moveid-viewer`) |
+| `user@moveid.local`      | `User1234!`  | 일반 회원                          |
+| `disabled@moveid.local`  | `User1234!`  | 정지된 회원 (로그인 거부 확인용)   |
+| `user01~40@moveid.local` | `User1234!`  | 일반 회원 (목록·페이지네이션용)    |
+
+> 지난 30일 이벤트는 대시보드 시연을 위해 DB에 직접 넣는다 (Keycloak 이벤트 API에는 쓰기가 없음).
+> 시드 이벤트는 id 가 `5eed` 로 시작해 실제 이벤트와 구분되며, 다시 실행하면 지우고 새로 넣는다.
 
 Keycloak 설정 내용은 [keycloak/README.md](keycloak/README.md)를 참고하세요.

@@ -1,0 +1,13 @@
+{
+  "extends": "@moveid/config/tsconfig.base.json",
+  "compilerOptions": {
+    // Node 24 가 .ts 를 직접 실행한다 (type stripping): 지워서 없어지는 문법만 허용
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "erasableSyntaxOnly": true,
+    "jsx": "preserve"
+  },
+  "include": ["*.ts"]
+}
