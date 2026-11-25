@@ -1,0 +1,8 @@
+pnpm-lock.yaml
+prd_md
+**/dist
+**/dist_keycloak
+**/coverage
+**/storybook-static
+playwright-report
+test-results
