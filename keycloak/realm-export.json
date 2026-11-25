@@ -1,0 +1,230 @@
+{
+  "realm": "moveid",
+  "displayName": "MoveID",
+  "enabled": true,
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": false,
+  "verifyEmail": false,
+  "editUsernameAllowed": false,
+  "internationalizationEnabled": true,
+  "supportedLocales": ["ko", "en"],
+  "defaultLocale": "ko",
+  "localizationTexts": {
+    "ko": {
+      "moveidName": "이름",
+      "moveidBirthdate": "생년월일",
+      "moveidInvalidBirthdate": "생년월일을 YYYY-MM-DD 형식으로 입력해 주세요.",
+      "moveidTermsService": "[필수] 서비스 이용약관 동의",
+      "moveidTermsPrivacy": "[필수] 개인정보 수집·이용 동의",
+      "moveidMarketing": "[선택] 마케팅 정보 수신 동의"
+    },
+    "en": {
+      "moveidName": "Name",
+      "moveidBirthdate": "Date of birth",
+      "moveidInvalidBirthdate": "Enter your date of birth as YYYY-MM-DD.",
+      "moveidTermsService": "[Required] Terms of Service",
+      "moveidTermsPrivacy": "[Required] Privacy Policy",
+      "moveidMarketing": "[Optional] Marketing emails"
+    }
+  },
+  "smtpServer": {
+    "host": "mailpit",
+    "port": "1025",
+    "from": "no-reply@moveid.local",
+    "fromDisplayName": "MoveID"
+  },
+  "passwordPolicy": "length(8) and maxLength(20) and regexPattern(^(?=.*[A-Za-z])(?=.*\\d)(?=.*[^A-Za-z\\d\\s]).{8,20}$) and notEmail(undefined)",
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "failureFactor": 5,
+  "waitIncrementSeconds": 900,
+  "maxFailureWaitSeconds": 900,
+  "maxDeltaTimeSeconds": 43200,
+  "minimumQuickLoginWaitSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "eventsEnabled": true,
+  "eventsExpiration": 7776000,
+  "eventsListeners": ["jboss-logging"],
+  "enabledEventTypes": [
+    "LOGIN",
+    "LOGIN_ERROR",
+    "LOGOUT",
+    "LOGOUT_ERROR",
+    "REGISTER",
+    "REGISTER_ERROR",
+    "UPDATE_PASSWORD",
+    "RESET_PASSWORD",
+    "GRANT_CONSENT",
+    "REVOKE_GRANT",
+    "CODE_TO_TOKEN",
+    "CODE_TO_TOKEN_ERROR",
+    "IDENTITY_PROVIDER_FIRST_LOGIN",
+    "IDENTITY_PROVIDER_LINK_ACCOUNT",
+    "FEDERATED_IDENTITY_LINK"
+  ],
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": false,
+  "roles": {
+    "realm": [
+      {
+        "name": "moveid-admin",
+        "description": "MoveID 관리자 (Back Office 전체 권한)",
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "view-users",
+              "query-users",
+              "manage-users",
+              "view-events",
+              "view-clients",
+              "query-clients",
+              "manage-clients",
+              "view-realm"
+            ]
+          }
+        }
+      },
+      {
+        "name": "moveid-viewer",
+        "description": "MoveID 조회 전용 관리자",
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "view-users",
+              "query-users",
+              "view-events",
+              "view-clients",
+              "query-clients",
+              "view-realm"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "moveid-account",
+      "name": "MoveID 내 계정",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "consentRequired": false,
+      "rootUrl": "http://localhost:5173",
+      "baseUrl": "/",
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5173/*",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "clientId": "moveid-admin",
+      "name": "MoveID 관리자",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "consentRequired": false,
+      "rootUrl": "http://localhost:5174",
+      "baseUrl": "/",
+      "redirectUris": ["http://localhost:5174/*"],
+      "webOrigins": ["http://localhost:5174"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5174/*",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "clientId": "moveid-ride",
+      "name": "MoveID Ride",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "consentRequired": true,
+      "rootUrl": "http://localhost:5175",
+      "baseUrl": "/",
+      "redirectUris": ["http://localhost:5175/*"],
+      "webOrigins": ["http://localhost:5175"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5175/*",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "clientId": "moveid-charge",
+      "name": "MoveID Charge",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "consentRequired": true,
+      "rootUrl": "http://localhost:5176",
+      "baseUrl": "/",
+      "redirectUris": ["http://localhost:5176/*"],
+      "webOrigins": ["http://localhost:5176"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5176/*",
+        "display.on.consent.screen": "true"
+      }
+    }
+  ],
+  "identityProviders": [
+    {
+      "alias": "google",
+      "displayName": "Google",
+      "providerId": "google",
+      "enabled": true,
+      "trustEmail": true,
+      "storeToken": false,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "clientId": "${GOOGLE_CLIENT_ID}",
+        "clientSecret": "${GOOGLE_CLIENT_SECRET}",
+        "defaultScope": "openid profile email",
+        "syncMode": "IMPORT"
+      }
+    }
+  ],
+  "components": {
+    "org.keycloak.userprofile.UserProfileProvider": [
+      {
+        "providerId": "declarative-user-profile",
+        "subComponents": {},
+        "config": {
+          "kc.user.profile.config": [
+            "{\"unmanagedAttributePolicy\":\"ADMIN_VIEW\",\"attributes\":[{\"name\":\"username\",\"displayName\":\"${username}\",\"validations\":{\"length\":{\"min\":3,\"max\":255},\"username-prohibited-characters\":{},\"up-username-not-idn-homograph\":{}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"email\",\"displayName\":\"${email}\",\"validations\":{\"email\":{},\"length\":{\"max\":255}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"firstName\",\"displayName\":\"${moveidName}\",\"validations\":{\"length\":{\"min\":2,\"max\":20},\"person-name-prohibited-characters\":{}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"birthdate\",\"displayName\":\"${moveidBirthdate}\",\"validations\":{\"pattern\":{\"pattern\":\"^\\\\d{4}-\\\\d{2}-\\\\d{2}$\",\"error-message\":\"moveidInvalidBirthdate\"}},\"annotations\":{\"inputType\":\"html5-date\"},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"terms_service\",\"displayName\":\"${moveidTermsService}\",\"validations\":{\"options\":{\"options\":[\"true\"]}},\"annotations\":{\"inputType\":\"multiselect-checkboxes\"},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"terms_privacy\",\"displayName\":\"${moveidTermsPrivacy}\",\"validations\":{\"options\":{\"options\":[\"true\"]}},\"annotations\":{\"inputType\":\"multiselect-checkboxes\"},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"marketing_opt_in\",\"displayName\":\"${moveidMarketing}\",\"validations\":{\"options\":{\"options\":[\"true\"]}},\"annotations\":{\"inputType\":\"multiselect-checkboxes\"},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false}],\"groups\":[]}"
+          ]
+        }
+      }
+    ]
+  }
+}
