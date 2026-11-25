@@ -1,0 +1,71 @@
+# MoveID 로컬 인증 환경
+#   docker compose up -d        → Keycloak http://localhost:8080 , Mailpit http://localhost:8025
+#   docker compose down -v      → 데이터까지 초기화 (realm-export.json 을 바꾼 뒤 다시 import 할 때)
+#
+# 값은 루트의 .env 에서 읽는다 (.env.example 참고).
+
+name: moveid
+
+services:
+  postgres:
+    image: postgres:17.12-alpine
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?.env 에 POSTGRES_PASSWORD 를 설정하세요}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U keycloak -d keycloak']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  keycloak:
+    # 버전을 고정한다: Account REST API 는 공식 문서가 거의 없어 버전마다 응답이 달라질 수 있다.
+    image: quay.io/keycloak/keycloak:26.8.2
+    # --import-realm: /opt/keycloak/data/import 의 realm 파일을 읽는다.
+    # 이미 realm 이 있으면 건너뛰므로, 설정을 바꿨다면 `docker compose down -v` 후 다시 올린다.
+    command: start-dev --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:?.env 에 KC_BOOTSTRAP_ADMIN_USERNAME 을 설정하세요}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:?.env 에 KC_BOOTSTRAP_ADMIN_PASSWORD 를 설정하세요}
+      KC_HEALTH_ENABLED: 'true'
+      # realm-export.json 의 ${GOOGLE_CLIENT_ID} 같은 자리표시자를 이 값으로 바꿔 넣는다.
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/moveid-realm.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    healthcheck:
+      # 이미지에 curl 이 없어서 bash 의 /dev/tcp 로 관리 포트(9000)의 /health/ready 를 확인한다.
+      test:
+        - CMD-SHELL
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/9000 &&
+          printf 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 &&
+          grep -q '"status": "UP"' <&3
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  mailpit:
+    # 로컬 메일 서버: 비밀번호 찾기 메일을 http://localhost:8025 에서 확인한다.
+    image: axllent/mailpit:v1.34.0
+    ports:
+      - '8025:8025'
+      - '1025:1025'
+
+volumes:
+  postgres-data:
