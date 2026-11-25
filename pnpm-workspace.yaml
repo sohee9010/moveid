@@ -1,0 +1,15 @@
+packages:
+  - apps/*
+  - packages/*
+
+# 모든 패키지가 같은 버전을 쓰도록 버전을 한곳에서 관리한다.
+# 각 package.json 에서는 "catalog:" 로 참조한다.
+catalog:
+  react: 18.3.1
+  react-dom: 18.3.1
+  '@types/react': 18.3.31
+  '@types/react-dom': 18.3.7
+  vite: ^8.3.8
+  '@vitejs/plugin-react': ^6.3.0
+  # typescript-eslint 8.x 가 TypeScript < 6.1 까지만 지원한다.
+  typescript: ~6.0.3

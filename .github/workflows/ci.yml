@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# 같은 브랜치에 새 커밋이 올라오면 이전 실행은 취소한다.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: 서식 · 린트 · 타입 · 빌드
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      # package.json 의 packageManager(pnpm@12.23.0) 버전을 그대로 설치한다.
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: 의존성 설치
+        run: pnpm install --frozen-lockfile
+
+      - name: 서식 검사 (Prettier)
+        run: pnpm format:check
+
+      - name: 린트 (ESLint)
+        run: pnpm lint
+
+      - name: 타입 검사 (tsc)
+        run: pnpm typecheck
+
+      - name: 빌드 (Vite)
+        run: pnpm build
